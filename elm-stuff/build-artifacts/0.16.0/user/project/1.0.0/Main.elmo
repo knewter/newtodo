@@ -1,0 +1,87 @@
+Elm.Main = Elm.Main || {};
+Elm.Main.make = function (_elm) {
+   "use strict";
+   _elm.Main = _elm.Main || {};
+   if (_elm.Main.values) return _elm.Main.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
+   var _op = {};
+   var todoView = function (todo) {
+      return A2($Html.li,
+      _U.list([$Html$Attributes.classList(_U.list([{ctor: "_Tuple2",_0: "completed",_1: todo.completed}]))]),
+      _U.list([A2($Html.div,
+      _U.list([$Html$Attributes.$class("view")]),
+      _U.list([A2($Html.input,
+              _U.list([$Html$Attributes.$class("toggle"),$Html$Attributes.type$("checkbox"),$Html$Attributes.checked(todo.completed)]),
+              _U.list([]))
+              ,A2($Html.label,_U.list([]),_U.list([$Html.text(todo.title)]))
+              ,A2($Html.button,_U.list([$Html$Attributes.$class("destroy")]),_U.list([]))]))]));
+   };
+   var css = function (path) {    return A3($Html.node,"link",_U.list([$Html$Attributes.rel("stylesheet"),$Html$Attributes.href(path)]),_U.list([]));};
+   var view = F2(function (address,model) {
+      return A2($Html.div,
+      _U.list([]),
+      _U.list([css("style.css")
+              ,A2($Html.section,
+              _U.list([$Html$Attributes.$class("todoapp")]),
+              _U.list([A2($Html.header,
+                      _U.list([$Html$Attributes.$class("header")]),
+                      _U.list([A2($Html.h1,_U.list([]),_U.list([$Html.text("todos")]))
+                              ,A2($Html.input,
+                              _U.list([$Html$Attributes.$class("new-todo")
+                                      ,$Html$Attributes.placeholder("What needs to be done?")
+                                      ,$Html$Attributes.autofocus(true)]),
+                              _U.list([]))]))
+                      ,A2($Html.section,
+                      _U.list([$Html$Attributes.$class("main")]),
+                      _U.list([A2($Html.ul,_U.list([$Html$Attributes.$class("todo-list")]),A2($List.map,todoView,model.todos))]))]))]));
+   });
+   var update = F2(function (action,model) {
+      var _p0 = action;
+      switch (_p0.ctor)
+      {case "NoOp": return model;
+         case "Add": return model;
+         case "Complete": return model;
+         case "Delete": return model;
+         default: return model;}
+   });
+   var Filter = function (a) {    return {ctor: "Filter",_0: a};};
+   var Delete = function (a) {    return {ctor: "Delete",_0: a};};
+   var Complete = function (a) {    return {ctor: "Complete",_0: a};};
+   var Add = {ctor: "Add"};
+   var NoOp = {ctor: "NoOp"};
+   var Model = F3(function (a,b,c) {    return {todos: a,todo: b,filterState: c};});
+   var Completed = {ctor: "Completed"};
+   var Active = {ctor: "Active"};
+   var All = {ctor: "All"};
+   var initialModel = {todos: _U.list([{title: "First real todo",completed: true,editing: false}])
+                      ,todo: {title: "",completed: false,editing: false}
+                      ,filterState: All};
+   var main = $StartApp$Simple.start({model: initialModel,update: update,view: view});
+   var Todo = F3(function (a,b,c) {    return {title: a,completed: b,editing: c};});
+   return _elm.Main.values = {_op: _op
+                             ,Todo: Todo
+                             ,All: All
+                             ,Active: Active
+                             ,Completed: Completed
+                             ,Model: Model
+                             ,NoOp: NoOp
+                             ,Add: Add
+                             ,Complete: Complete
+                             ,Delete: Delete
+                             ,Filter: Filter
+                             ,update: update
+                             ,css: css
+                             ,todoView: todoView
+                             ,view: view
+                             ,initialModel: initialModel
+                             ,main: main};
+};
