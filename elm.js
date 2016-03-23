@@ -10220,6 +10220,72 @@ Elm.Html.Attributes.make = function (_elm) {
                                         ,property: property
                                         ,attribute: attribute};
 };
+Elm.Html = Elm.Html || {};
+Elm.Html.Events = Elm.Html.Events || {};
+Elm.Html.Events.make = function (_elm) {
+   "use strict";
+   _elm.Html = _elm.Html || {};
+   _elm.Html.Events = _elm.Html.Events || {};
+   if (_elm.Html.Events.values) return _elm.Html.Events.values;
+   var _U = Elm.Native.Utils.make(_elm),
+   $Basics = Elm.Basics.make(_elm),
+   $Debug = Elm.Debug.make(_elm),
+   $Html = Elm.Html.make(_elm),
+   $Json$Decode = Elm.Json.Decode.make(_elm),
+   $List = Elm.List.make(_elm),
+   $Maybe = Elm.Maybe.make(_elm),
+   $Result = Elm.Result.make(_elm),
+   $Signal = Elm.Signal.make(_elm),
+   $VirtualDom = Elm.VirtualDom.make(_elm);
+   var _op = {};
+   var keyCode = A2($Json$Decode._op[":="],"keyCode",$Json$Decode.$int);
+   var targetChecked = A2($Json$Decode.at,_U.list(["target","checked"]),$Json$Decode.bool);
+   var targetValue = A2($Json$Decode.at,_U.list(["target","value"]),$Json$Decode.string);
+   var defaultOptions = $VirtualDom.defaultOptions;
+   var Options = F2(function (a,b) {    return {stopPropagation: a,preventDefault: b};});
+   var onWithOptions = $VirtualDom.onWithOptions;
+   var on = $VirtualDom.on;
+   var messageOn = F3(function (name,addr,msg) {    return A3(on,name,$Json$Decode.value,function (_p0) {    return A2($Signal.message,addr,msg);});});
+   var onClick = messageOn("click");
+   var onDoubleClick = messageOn("dblclick");
+   var onMouseMove = messageOn("mousemove");
+   var onMouseDown = messageOn("mousedown");
+   var onMouseUp = messageOn("mouseup");
+   var onMouseEnter = messageOn("mouseenter");
+   var onMouseLeave = messageOn("mouseleave");
+   var onMouseOver = messageOn("mouseover");
+   var onMouseOut = messageOn("mouseout");
+   var onBlur = messageOn("blur");
+   var onFocus = messageOn("focus");
+   var onSubmit = messageOn("submit");
+   var onKey = F3(function (name,addr,handler) {    return A3(on,name,keyCode,function (code) {    return A2($Signal.message,addr,handler(code));});});
+   var onKeyUp = onKey("keyup");
+   var onKeyDown = onKey("keydown");
+   var onKeyPress = onKey("keypress");
+   return _elm.Html.Events.values = {_op: _op
+                                    ,onBlur: onBlur
+                                    ,onFocus: onFocus
+                                    ,onSubmit: onSubmit
+                                    ,onKeyUp: onKeyUp
+                                    ,onKeyDown: onKeyDown
+                                    ,onKeyPress: onKeyPress
+                                    ,onClick: onClick
+                                    ,onDoubleClick: onDoubleClick
+                                    ,onMouseMove: onMouseMove
+                                    ,onMouseDown: onMouseDown
+                                    ,onMouseUp: onMouseUp
+                                    ,onMouseEnter: onMouseEnter
+                                    ,onMouseLeave: onMouseLeave
+                                    ,onMouseOver: onMouseOver
+                                    ,onMouseOut: onMouseOut
+                                    ,on: on
+                                    ,onWithOptions: onWithOptions
+                                    ,defaultOptions: defaultOptions
+                                    ,targetValue: targetValue
+                                    ,targetChecked: targetChecked
+                                    ,keyCode: keyCode
+                                    ,Options: Options};
+};
 Elm.StartApp = Elm.StartApp || {};
 Elm.StartApp.Simple = Elm.StartApp.Simple || {};
 Elm.StartApp.Simple.make = function (_elm) {
@@ -10263,12 +10329,14 @@ Elm.Main.make = function (_elm) {
    $Debug = Elm.Debug.make(_elm),
    $Html = Elm.Html.make(_elm),
    $Html$Attributes = Elm.Html.Attributes.make(_elm),
+   $Html$Events = Elm.Html.Events.make(_elm),
    $List = Elm.List.make(_elm),
    $Maybe = Elm.Maybe.make(_elm),
    $Result = Elm.Result.make(_elm),
    $Signal = Elm.Signal.make(_elm),
    $StartApp$Simple = Elm.StartApp.Simple.make(_elm);
    var _op = {};
+   var newTodo = {title: "",completed: false,editing: false};
    var todoView = function (todo) {
       return A2($Html.li,
       _U.list([$Html$Attributes.classList(_U.list([{ctor: "_Tuple2",_0: "completed",_1: todo.completed}]))]),
@@ -10281,6 +10349,25 @@ Elm.Main.make = function (_elm) {
               ,A2($Html.button,_U.list([$Html$Attributes.$class("destroy")]),_U.list([]))]))]));
    };
    var css = function (path) {    return A3($Html.node,"link",_U.list([$Html$Attributes.rel("stylesheet"),$Html$Attributes.href(path)]),_U.list([]));};
+   var update = F2(function (action,model) {
+      var _p0 = action;
+      switch (_p0.ctor)
+      {case "NoOp": return model;
+         case "Add": return _U.update(model,{todos: A2($List._op["::"],model.todo,model.todos),todo: newTodo});
+         case "Complete": return model;
+         case "Delete": return model;
+         case "UpdateTitle": var todo = model.todo;
+           var newTodo = _U.update(todo,{title: _p0._0});
+           return _U.update(model,{todo: newTodo});
+         default: return model;}
+   });
+   var Filter = function (a) {    return {ctor: "Filter",_0: a};};
+   var UpdateTitle = function (a) {    return {ctor: "UpdateTitle",_0: a};};
+   var Delete = function (a) {    return {ctor: "Delete",_0: a};};
+   var Complete = function (a) {    return {ctor: "Complete",_0: a};};
+   var Add = {ctor: "Add"};
+   var NoOp = {ctor: "NoOp"};
+   var handleKeyPress = function (code) {    var _p1 = code;if (_p1 === 13) {    return Add;} else {    return NoOp;}};
    var view = F2(function (address,model) {
       return A2($Html.div,
       _U.list([]),
@@ -10293,33 +10380,25 @@ Elm.Main.make = function (_elm) {
                               ,A2($Html.input,
                               _U.list([$Html$Attributes.$class("new-todo")
                                       ,$Html$Attributes.placeholder("What needs to be done?")
-                                      ,$Html$Attributes.autofocus(true)]),
+                                      ,$Html$Attributes.autofocus(true)
+                                      ,$Html$Attributes.value(model.todo.title)
+                                      ,A2($Html$Events.onKeyPress,address,handleKeyPress)
+                                      ,A3($Html$Events.on,
+                                      "input",
+                                      $Html$Events.targetValue,
+                                      function (str) {
+                                         return A2($Signal.message,address,UpdateTitle(str));
+                                      })]),
                               _U.list([]))]))
                       ,A2($Html.section,
                       _U.list([$Html$Attributes.$class("main")]),
                       _U.list([A2($Html.ul,_U.list([$Html$Attributes.$class("todo-list")]),A2($List.map,todoView,model.todos))]))]))]));
    });
-   var update = F2(function (action,model) {
-      var _p0 = action;
-      switch (_p0.ctor)
-      {case "NoOp": return model;
-         case "Add": return model;
-         case "Complete": return model;
-         case "Delete": return model;
-         default: return model;}
-   });
-   var Filter = function (a) {    return {ctor: "Filter",_0: a};};
-   var Delete = function (a) {    return {ctor: "Delete",_0: a};};
-   var Complete = function (a) {    return {ctor: "Complete",_0: a};};
-   var Add = {ctor: "Add"};
-   var NoOp = {ctor: "NoOp"};
    var Model = F3(function (a,b,c) {    return {todos: a,todo: b,filterState: c};});
    var Completed = {ctor: "Completed"};
    var Active = {ctor: "Active"};
    var All = {ctor: "All"};
-   var initialModel = {todos: _U.list([{title: "First real todo",completed: true,editing: false}])
-                      ,todo: {title: "",completed: false,editing: false}
-                      ,filterState: All};
+   var initialModel = {todos: _U.list([_U.update(newTodo,{title: "Something"})]),todo: {title: "",completed: false,editing: false},filterState: All};
    var main = $StartApp$Simple.start({model: initialModel,update: update,view: view});
    var Todo = F3(function (a,b,c) {    return {title: a,completed: b,editing: c};});
    return _elm.Main.values = {_op: _op
@@ -10332,11 +10411,14 @@ Elm.Main.make = function (_elm) {
                              ,Add: Add
                              ,Complete: Complete
                              ,Delete: Delete
+                             ,UpdateTitle: UpdateTitle
                              ,Filter: Filter
                              ,update: update
                              ,css: css
                              ,todoView: todoView
+                             ,handleKeyPress: handleKeyPress
                              ,view: view
+                             ,newTodo: newTodo
                              ,initialModel: initialModel
                              ,main: main};
 };

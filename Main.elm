@@ -1,6 +1,7 @@
 import StartApp.Simple exposing (start)
 import Html exposing (..)
 import Html.Attributes exposing (..)
+import Html.Events exposing (onKeyPress, on, targetValue)
 
 type alias Todo =
   { title : String
@@ -24,6 +25,7 @@ type Action
   | Add
   | Complete Todo
   | Delete Todo
+  | UpdateTitle String
   | Filter FilterState
 
 
@@ -33,11 +35,19 @@ update action model =
     NoOp ->
       model
     Add ->
-      model
+      { model
+      | todos = model.todo :: model.todos
+      , todo = newTodo
+      }
     Complete todo ->
       model
     Delete todo ->
       model
+    UpdateTitle str ->
+      let todo = model.todo
+          newTodo = { todo | title = str }
+      in
+        { model | todo = newTodo }
     Filter filterState ->
       model
 
@@ -58,6 +68,15 @@ todoView todo =
     ]
 
 
+handleKeyPress : Int -> Action
+handleKeyPress code =
+  case code of
+    13 ->
+      Add
+    _ ->
+      NoOp
+
+
 view : Signal.Address Action -> Model -> Html
 view address model =
   div []
@@ -69,6 +88,9 @@ view address model =
         [ class "new-todo"
         , placeholder "What needs to be done?"
         , autofocus True
+        , value model.todo.title
+        , onKeyPress address handleKeyPress
+        , on "input" targetValue (\str -> Signal.message address (UpdateTitle str))
         ] []
       ]
     , section [ class "main" ]
@@ -79,18 +101,23 @@ view address model =
   ]
 
 
+newTodo : Todo
+newTodo =
+  { title = ""
+  , completed = False
+  , editing = False
+  }
+
+
 initialModel : Model
 initialModel =
   { todos =
-    [ { title = "First real todo"
-      , completed = True
-      , editing = False
-      }
+    [ { newTodo | title = "Something" }
     ]
   , todo = { title = ""
-          , completed = False
-          , editing = False
-          }
+           , completed = False
+           , editing = False
+           }
   , filterState = All
   }
 
