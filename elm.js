@@ -10353,7 +10353,8 @@ Elm.Main.make = function (_elm) {
       var _p0 = action;
       switch (_p0.ctor)
       {case "NoOp": return model;
-         case "Add": return _U.update(model,{todos: A2($List._op["::"],model.todo,model.todos),todo: newTodo});
+         case "Add": var newTodos = A2($List._op["::"],model.todo,model.todos);
+           return _U.update(model,{todos: newTodos,todo: {title: "",completed: false,editing: false}});
          case "Complete": return model;
          case "Delete": return model;
          case "UpdateTitle": var todo = model.todo;
@@ -10398,7 +10399,7 @@ Elm.Main.make = function (_elm) {
    var Completed = {ctor: "Completed"};
    var Active = {ctor: "Active"};
    var All = {ctor: "All"};
-   var initialModel = {todos: _U.list([_U.update(newTodo,{title: "Something"})]),todo: {title: "",completed: false,editing: false},filterState: All};
+   var initialModel = {todos: _U.list([]),todo: {title: "",completed: false,editing: false},filterState: All};
    var main = $StartApp$Simple.start({model: initialModel,update: update,view: view});
    var Todo = F3(function (a,b,c) {    return {title: a,completed: b,editing: c};});
    return _elm.Main.values = {_op: _op

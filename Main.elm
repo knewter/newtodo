@@ -35,10 +35,16 @@ update action model =
     NoOp ->
       model
     Add ->
-      { model
-      | todos = model.todo :: model.todos
-      , todo = newTodo
-      }
+      let
+          newTodos = model.todo :: model.todos
+      in
+        { model
+        | todos = newTodos
+        , todo = { title = ""
+                 , completed = False
+                 , editing = False
+                 }
+        }
     Complete todo ->
       model
     Delete todo ->
@@ -112,8 +118,7 @@ newTodo =
 initialModel : Model
 initialModel =
   { todos =
-    [ { newTodo | title = "Something" }
-    ]
+    []
   , todo = { title = ""
            , completed = False
            , editing = False
